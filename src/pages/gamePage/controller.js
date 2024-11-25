@@ -1,6 +1,8 @@
 // Global
 let HEIGHT, WIDTH
 let CTX
+let MAX_SIZE
+let GAP_LINE
 let PAN_DIRECTION = {
     isMouseDown: false,
     beginX: 0,
@@ -14,13 +16,13 @@ export const initBoard = (ctx, height, width) => {
 
     HEIGHT = height
     WIDTH = width
+
+    MAX_SIZE = 10
+    GAP_LINE = 50
 }
 
 export const drawTable = (offsetX = 0, offsetY = 0) => {
     CTX.clearRect(0, 0, WIDTH, HEIGHT)
-
-    const MAX_SIZE = 100
-    const GAP_LINE = 50
 
     const BEGIN_X_TABLE = (MAX_SIZE / 2) * GAP_LINE * (-1) + WIDTH / 2 + offsetX
     const END_X_TABLE = (MAX_SIZE / 2) * GAP_LINE + WIDTH / 2 + offsetX
@@ -86,15 +88,17 @@ export const drawTable = (offsetX = 0, offsetY = 0) => {
 }
 
 export const handleMouseMove = ({canvas, evt}) => {
+    const rect = canvas.getBoundingClientRect()
+
     if (!PAN_DIRECTION.isMouseDown) {
         return
     }
 
-    const rect = canvas.getBoundingClientRect()
     drawTable(
         evt.clientX - rect.left - PAN_DIRECTION.beginX + PAN_DIRECTION.moveX,
         evt.clientY - rect.top - PAN_DIRECTION.beginY + PAN_DIRECTION.moveY
     )
+
 }
 
 export const handleMouseDown = ({canvas, evt}) => {
@@ -114,6 +118,15 @@ export const handleMouseUp = ({canvas, evt}) => {
     PAN_DIRECTION.isMouseDown = false
 
     if (evt.clientX - rect.left - PAN_DIRECTION.beginX === 0 && evt.clientY - rect.top - PAN_DIRECTION.beginY === 0) {
-        console.log('You are click!')
+        return handleClickStep(canvas, evt)
+    }
+}
+
+export const handleClickStep = (canvas, evt) => {
+    const rect = canvas.getBoundingClientRect()
+
+    return {
+        x: Math.floor((evt.clientX - rect.left - WIDTH / 2 - PAN_DIRECTION.moveX) / GAP_LINE),
+        y: Math.floor((evt.clientY - rect.top - HEIGHT / 2 - PAN_DIRECTION.moveY) / GAP_LINE)
     }
 }

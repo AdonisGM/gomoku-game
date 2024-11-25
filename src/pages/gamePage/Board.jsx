@@ -33,10 +33,13 @@ const Board = () => {
         
         canvas.addEventListener("mouseup", (e) => {
             e.preventDefault()
-            handleMouseUp({
+            const location = handleMouseUp({
                 canvas: canvas,
                 evt: e
             })
+            if (location) {
+                handleClickSquare(location)
+            }
         })
         
         canvas.addEventListener("mousedown", (e) => {
@@ -53,6 +56,10 @@ const Board = () => {
             canvas.removeEventListener("mousedown", (e) => {})
         }
     }, []);
+
+    const handleClickSquare = (location) => {
+        console.log(location)
+    }
 
     return (
         <div className={'w-full h-full'} id={'containerBoard'}>
