@@ -93,7 +93,7 @@ const Welcome = () => {
 				<CardBody className={'flex flex-col items-center justify-center py-10'}>
 					<div className={'flex flex-col items-center justify-center '}>
 						<h1
-							className={'text-default-500 text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-yellow-400 leading-normal'}>Gomoku</h1>
+							className={'text-default-500 text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 leading-normal'}>Gomoku</h1>
 					</div>
 
 					<Spacer y={10}/>

@@ -10,6 +10,7 @@ let PAN_DIRECTION = {
     moveX: 0,
     moveY: 0,
 }
+let offsetX = 0, offsetY = 0;
 
 export const initBoard = (ctx, height, width) => {
     CTX = ctx
@@ -21,7 +22,7 @@ export const initBoard = (ctx, height, width) => {
     GAP_LINE = 50
 }
 
-export const drawTable = (offsetX = 0, offsetY = 0) => {
+export const drawTable = (listCell) => {
     CTX.clearRect(0, 0, WIDTH, HEIGHT)
 
     const BEGIN_X_TABLE = (MAX_SIZE / 2) * GAP_LINE * (-1) + WIDTH / 2 + offsetX
@@ -85,20 +86,23 @@ export const drawTable = (offsetX = 0, offsetY = 0) => {
         CTX.lineWidth = 1
         CTX.stroke()
     }
+
+    listCell.forEach(({x, y, side}) => {
+        renderCell(x, y, side, offsetX, offsetY)
+    })
 }
 
-export const handleMouseMove = ({canvas, evt}) => {
+export const handleMouseMove = ({canvas, evt, listCell}) => {
     const rect = canvas.getBoundingClientRect()
 
     if (!PAN_DIRECTION.isMouseDown) {
         return
     }
 
-    drawTable(
-        evt.clientX - rect.left - PAN_DIRECTION.beginX + PAN_DIRECTION.moveX,
-        evt.clientY - rect.top - PAN_DIRECTION.beginY + PAN_DIRECTION.moveY
-    )
+    offsetX = evt.clientX - rect.left - PAN_DIRECTION.beginX + PAN_DIRECTION.moveX;
+    offsetY = evt.clientY - rect.top - PAN_DIRECTION.beginY + PAN_DIRECTION.moveY
 
+    drawTable(listCell)
 }
 
 export const handleMouseDown = ({canvas, evt}) => {
@@ -118,7 +122,11 @@ export const handleMouseUp = ({canvas, evt}) => {
     PAN_DIRECTION.isMouseDown = false
 
     if (evt.clientX - rect.left - PAN_DIRECTION.beginX === 0 && evt.clientY - rect.top - PAN_DIRECTION.beginY === 0) {
-        return handleClickStep(canvas, evt)
+        const location = handleClickStep(canvas, evt)
+
+        if (- MAX_SIZE / 2 <= location.x && - MAX_SIZE / 2 <= location.y && MAX_SIZE / 2 - 1 >= location.x && MAX_SIZE / 2 - 1 >= location.y) {
+            return location
+        }
     }
 }
 
@@ -129,4 +137,23 @@ export const handleClickStep = (canvas, evt) => {
         x: Math.floor((evt.clientX - rect.left - WIDTH / 2 - PAN_DIRECTION.moveX) / GAP_LINE),
         y: Math.floor((evt.clientY - rect.top - HEIGHT / 2 - PAN_DIRECTION.moveY) / GAP_LINE)
     }
+}
+
+export const renderCell = (x, y, side, offsetX, offsetY) => {
+    // calc location
+
+    CTX.beginPath();
+    CTX.arc(
+        WIDTH / 2 + x * GAP_LINE + offsetX + GAP_LINE / 2,
+        HEIGHT / 2 +  y * GAP_LINE + offsetY + GAP_LINE / 2,
+        16,
+        0,
+        2 * Math.PI
+    );
+    if (side === 1) {
+        CTX.fillStyle = "orange";
+    } else {
+        CTX.fillStyle = "gray";
+    }
+    CTX.fill();
 }
