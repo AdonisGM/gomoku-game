@@ -1,6 +1,7 @@
 // Global
 let HEIGHT, WIDTH
 let CTX
+let CANVAS
 let MAX_SIZE
 let GAP_LINE
 let PAN_DIRECTION = {
@@ -11,18 +12,24 @@ let PAN_DIRECTION = {
     moveY: 0,
 }
 let offsetX = 0, offsetY = 0;
+let listCell = []
 
-export const initBoard = (ctx, height, width) => {
+export const initBoard = (ctx, canvas, height, width) => {
     CTX = ctx
+    CANVAS = canvas
 
     HEIGHT = height
     WIDTH = width
 
-    MAX_SIZE = 10
-    GAP_LINE = 50
+    MAX_SIZE = 20
+    GAP_LINE = 40
+
+    listCell = []
 }
 
-export const drawTable = (listCell) => {
+export const drawTable = (cells) => {
+    listCell = cells
+
     CTX.clearRect(0, 0, WIDTH, HEIGHT)
 
     const BEGIN_X_TABLE = (MAX_SIZE / 2) * GAP_LINE * (-1) + WIDTH / 2 + offsetX
@@ -92,8 +99,8 @@ export const drawTable = (listCell) => {
     })
 }
 
-export const handleMouseMove = ({canvas, evt, listCell}) => {
-    const rect = canvas.getBoundingClientRect()
+export const handleMouseMove = ({evt}) => {
+    const rect = CANVAS.getBoundingClientRect()
 
     if (!PAN_DIRECTION.isMouseDown) {
         return
@@ -105,16 +112,16 @@ export const handleMouseMove = ({canvas, evt, listCell}) => {
     drawTable(listCell)
 }
 
-export const handleMouseDown = ({canvas, evt}) => {
-    const rect = canvas.getBoundingClientRect()
+export const handleMouseDown = ({evt}) => {
+    const rect = CANVAS.getBoundingClientRect()
     PAN_DIRECTION.beginX = evt.clientX - rect.left
     PAN_DIRECTION.beginY = evt.clientY - rect.top
 
     PAN_DIRECTION.isMouseDown = true
 }
 
-export const handleMouseUp = ({canvas, evt}) => {
-    const rect = canvas.getBoundingClientRect()
+export const handleMouseUp = ({evt}) => {
+    const rect = CANVAS.getBoundingClientRect()
 
     PAN_DIRECTION.moveX = PAN_DIRECTION.moveX + evt.clientX - rect.left - PAN_DIRECTION.beginX
     PAN_DIRECTION.moveY = PAN_DIRECTION.moveY + evt.clientY - rect.top - PAN_DIRECTION.beginY
@@ -122,7 +129,7 @@ export const handleMouseUp = ({canvas, evt}) => {
     PAN_DIRECTION.isMouseDown = false
 
     if (evt.clientX - rect.left - PAN_DIRECTION.beginX === 0 && evt.clientY - rect.top - PAN_DIRECTION.beginY === 0) {
-        const location = handleClickStep(canvas, evt)
+        const location = handleClickStep(evt)
 
         if (- MAX_SIZE / 2 <= location.x && - MAX_SIZE / 2 <= location.y && MAX_SIZE / 2 - 1 >= location.x && MAX_SIZE / 2 - 1 >= location.y) {
             return location
@@ -130,8 +137,8 @@ export const handleMouseUp = ({canvas, evt}) => {
     }
 }
 
-export const handleClickStep = (canvas, evt) => {
-    const rect = canvas.getBoundingClientRect()
+export const handleClickStep = (evt) => {
+    const rect = CANVAS.getBoundingClientRect()
 
     return {
         x: Math.floor((evt.clientX - rect.left - WIDTH / 2 - PAN_DIRECTION.moveX) / GAP_LINE),

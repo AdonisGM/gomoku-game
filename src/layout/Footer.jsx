@@ -3,12 +3,12 @@ import {IconBrandGithubFilled, IconPower} from "@tabler/icons-react";
 
 const Footer = () => {
 	return <div className={'flex flex-row gap-3 mt-3'}>
-		<Card className={'h-12 min-w-12'} isPressable={true}>
+		<Card className={'h-12 min-w-12'} isPressable={true} onPress={() => {
+			document.location.href = import.meta.env.VITE_SSO_URL + '/settings'
+		}}>
 			<CardBody>
 				<div className={'h-full w-full flex justify-center items-center overflow-hidden'}>
-					<IconPower size={18} className={'text-red-600'} onClick={() => {
-						document.location.href = import.meta.env.VITE_SSO_URL + '/settings'
-					}}/>
+					<IconPower size={18} className={'text-red-600'}/>
 				</div>
 			</CardBody>
 		</Card>
@@ -19,7 +19,9 @@ const Footer = () => {
 				</div>
 			</CardBody>
 		</Card>
-		<Card className={'h-12 min-w-12'} isPressable={true}>
+		<Card className={'h-12 min-w-12'} isPressable={true} onPress={() => {
+			window.open('http://github.com/AdonisGM', '_blank').focus();
+		}}>
 			<CardBody>
 				<div className={'h-full w-full flex justify-center items-center overflow-hidden'}>
 					<IconBrandGithubFilled size={18} className={'text-black'}/>

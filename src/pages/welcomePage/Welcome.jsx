@@ -98,7 +98,7 @@ const Welcome = () => {
 
 					<Spacer y={10}/>
 					<p className={'text-default-500 text-sm'}>
-						Engage in an intellectual game with friends and family. We hope you enjoy playing with us!
+						Challenge your friends and family to an intellectual game. We hope you have a blast!
 					</p>
 					<Spacer y={16}/>
 					<Button

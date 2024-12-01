@@ -12,11 +12,8 @@ const PlayGame = (props) => {
     return (
         <div>
             <div className={'flex flex-col gap-2.5 justify-center items-center'}>
-                <Button className={'w-1/2'} color="success" size={'sm'} variant="flat" startContent={<IconDeviceGamepad2/>} onPress={handlePlayNewGame}>
-                    Create game!
-                </Button>
-                <Button className={'w-1/2'} color="warning" size={'sm'} variant="flat">
-                    Join game
+                <Button color="success" size={'sm'} variant="flat" startContent={<IconDeviceGamepad2/>} onPress={handlePlayNewGame}>
+                    Ender game!
                 </Button>
             </div>
         </div>

@@ -1,9 +1,7 @@
 import {useEffect, useState} from "react";
 import {drawTable, handleMouseDown, handleMouseMove, handleMouseUp, initBoard} from "./controller.js";
 
-const Board = () => {
-    const [listCell, setListCell] = useState([])
-
+const Board = (props) => {
     useEffect(() => {
         const containerBoard = document.getElementById('containerBoard');
         const canvas = document.getElementById("mainBoard");
@@ -20,59 +18,81 @@ const Board = () => {
         //     console.log(time)
         //
         // })
-        initBoard(ctx, containerHeight, containerWidth)
-        drawTable(listCell)
+        initBoard(ctx, canvas, containerHeight, containerWidth)
+        drawTable(props.listCell)
 
-        canvas.addEventListener("mousemove", (e) => {
-            e.preventDefault()
-            handleMouseMove({
-                ctx,
-                canvas: canvas,
-                evt: e,
-                listCell: listCell
-            })
-        })
+        // canvas.addEventListener("mousemove", onMouseMove)
         
-        canvas.addEventListener("mouseup", (e) => {
-            e.preventDefault()
-            const location = handleMouseUp({
-                canvas: canvas,
-                evt: e
-            })
-            if (location) {
-                handleClickSquare(location)
-            }
-        })
+        // canvas.addEventListener("mouseup", (e) => {
+        //     e.preventDefault()
+        //     const location = handleMouseUp({
+        //         canvas: canvas,
+        //         evt: e
+        //     })
+        //     if (location) {
+        //         handleClickSquare(location)
+        //     }
+        // })
         
-        canvas.addEventListener("mousedown", (e) => {
-            e.preventDefault()
-            handleMouseDown({
-                canvas: canvas,
-                evt: e
-            })
-        })
+        // canvas.addEventListener("mousedown", (e) => {
+        //     e.preventDefault()
+        //     handleMouseDown({
+        //         canvas: canvas,
+        //         evt: e
+        //     })
+        // })
 
         return () => {
-            canvas.removeEventListener("mousemove", () => {})
-            canvas.removeEventListener("mouseup", () => {})
-            canvas.removeEventListener("mousedown", () => {})
+            // canvas.removeEventListener("mousemove", () => {})
+            // canvas.removeEventListener("mouseup", () => {})
+            // canvas.removeEventListener("mousedown", () => {})
         }
     }, []);
 
+    // const onMouseMove = (e) => {
+    //     e.preventDefault()
+    //     handleMouseMove({
+    //         evt: e,
+    //         listCell: props.listCell
+    //     })
+    // }
+
     useEffect(() => {
-    }, [listCell]);
+        drawTable(props.listCell)
+    }, [props.listCell]);
 
     const handleClickSquare = (location) => {
-        const side = 0
-        listCell.push({x: location.x, y: location.y, side: side})
-        setListCell([...listCell])
-        console.log(listCell)
-        drawTable(listCell)
+        props.onAddCell({x: location.x, y: location.y, side: props.side})
     }
 
     return (
         <div className={'w-full h-full'} id={'containerBoard'}>
-            <canvas id={'mainBoard'} className={'w-full h-full'}></canvas>
+            <canvas
+                id={'mainBoard'}
+                className={'w-full h-full'}
+                onMouseUp={(e) => {
+                    e.preventDefault()
+                    const location = handleMouseUp({
+                        evt: e
+                    })
+                    if (location) {
+                        handleClickSquare(location)
+                    }
+                }}
+                onMouseDown={(e) => {
+                    e.preventDefault()
+                    handleMouseDown({
+                        evt: e
+                    })
+                }}
+                onMouseMove={(e) => {
+                    e.preventDefault()
+                    handleMouseMove({
+                        evt: e,
+                        listCell: props.listCell
+                    })
+                }}
+            ></canvas>
         </div>
     )
 }
