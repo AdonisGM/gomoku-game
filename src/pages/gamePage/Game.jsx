@@ -307,7 +307,7 @@ const Game = () => {
                                 {!isGuest && infoGame?.C_NEXT_PLAYER === localStorage.getItem('username') && <p className={'text-sm text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 leading-normal'}>Your turn!</p>}
                                 {!isGuest && infoGame?.C_STATUS === 'WIN' && infoGame?.C_WIN_PLAYER === localStorage.getItem('username') && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-blue-700 leading-normal'}>Your winnnn!</span> 🥳🥳🥳</p>}
                                 {!isGuest && infoGame?.C_STATUS === 'WIN' && infoGame?.C_WIN_PLAYER !== localStorage.getItem('username') && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-pink-700 leading-normal'}>Your lose! </span>😭😱🤕</p>}
-                                {isGuest && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700 leading-normal'}>Your is guest</span></p>}
+                                {isGuest && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700 leading-normal'}>You are guest! 👁️😁🤫</span></p>}
                             </div>
                         </CardBody>
                     </Card>
