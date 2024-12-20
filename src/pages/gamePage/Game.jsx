@@ -1,4 +1,4 @@
-import {Button, Card, CardBody, Spacer} from "@nextui-org/react";
+import {Button, Card, CardBody, Select, SelectItem, Spacer} from "@nextui-org/react";
 import {IconCircleFilled, IconPower} from "@tabler/icons-react";
 import Board from "./Board.jsx";
 import {useNavigate} from "react-router-dom";
@@ -6,11 +6,14 @@ import {socket} from "../../apis/socket.js";
 import {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import InputText from "../../components/customInput/InputText.jsx";
+import InputSelectTypeJoinGame from "../../components/customInput/InputSelectTypeJoinGame.jsx";
+import toast from "react-hot-toast";
 
 const Game = () => {
     const [isConnected, setisConnected] = useState(false);
     const [inGame, setInGame] = useState(false);
-    const [isStart, setIsStart] = useState(false)
+    const [isStart, setIsStart] = useState(false);
+    const [isGuest, setIsGuest] = useState(false)
 
     const [matchId, setMatchId] = useState(undefined);
     const [infoGame, setInfoGame] = useState(undefined)
@@ -83,7 +86,6 @@ const Game = () => {
                 setIsStart(true)
                 break;
             case 'infoGame':
-                console.log(message.data)
                 setInfoGame(message.data[0])
                 break;
             default:
@@ -107,7 +109,13 @@ const Game = () => {
 	}
 
     const onError = (err) => {
-        console.log(err)
+        try {
+            toast.error(err.error_message);
+        } catch (e) {
+            toast.error('Lỗi gì đó rồi 😭');
+            console.error(err)
+            console.error(e)
+        }
     }
 
     const writeLog = (type, message) => {
@@ -149,7 +157,15 @@ const Game = () => {
 	}
 
     const onSubmit = (data) => {
-        socket.emit('joinGame', {
+        if (!data.matchId) {
+            return;
+        }
+
+        if (data.type === 'viewGame') {
+            setIsGuest(true)
+        }
+
+        socket.emit(data.type, {
             matchId: data.matchId,
         })
         setIsLoading(true)
@@ -177,6 +193,7 @@ const Game = () => {
     const { control, handleSubmit, reset, setValue, getValues, watch } = useForm({
         defaultValues: {
             matchId: '',
+            type: 'viewGame',
         }
     })
 
@@ -209,30 +226,38 @@ const Game = () => {
                                             Create game!
                                         </Button>
                                     </div>
-                                    <form className={'w-44'} onSubmit={handleSubmit((data) => onSubmit(data))}>
-                                        <InputText
-                                            name={'matchId'}
-                                            label={'Match Id'}
-                                            control={control}
-                                        />
-                                        <Spacer y={2}/>
-                                        <Button
-                                            type="submit"
-                                            className={'w-full'}
-                                            color="warning"
-                                            size={'sm'}
-                                            variant="flat"
-                                            isLoading={isLoading}
-                                            isDisabled={isLoading}
-                                        >
-                                            Join game
-                                        </Button>
-                                    </form>
+                                    <div className={'w-44'}>
+                                        <form onSubmit={handleSubmit((data) => onSubmit(data))}>
+                                            <InputText
+                                                name={'matchId'}
+                                                label={'Match Id'}
+                                                control={control}
+                                            />
+                                            <Spacer y={2}/>
+                                            <InputSelectTypeJoinGame
+                                                name={'type'}
+                                                label={'Select type view'}
+                                                control={control}
+                                            />
+                                            <Spacer y={2}/>
+                                            <Button
+                                                type="submit"
+                                                className={'w-full'}
+                                                color="secondary"
+                                                size={'sm'}
+                                                variant="flat"
+                                                isLoading={isLoading}
+                                                isDisabled={isLoading}
+                                            >
+                                                View/Join game
+                                            </Button>
+                                        </form>
+                                    </div>
                                 </div>
                             </CardBody>
                         </Card>
                     </div>
-                    )}
+                )}
 
                 {/*<div className={'absolute bottom-3 right-3'}>*/}
                 {/*    <Card className={'max-h-24 min-w-24'}>*/}
@@ -279,9 +304,10 @@ const Game = () => {
                                 </div>
                             </div>
                             <div className={'mt-2'}>
-                                {infoGame?.C_NEXT_PLAYER === localStorage.getItem('username') && <p className={'text-sm text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 leading-normal'}>Your turn!</p>}
-                                {infoGame?.C_STATUS === 'WIN' && infoGame?.C_WIN_PLAYER === localStorage.getItem('username') && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-blue-700 leading-normal'}>Your winnnn!</span> 🥳🥳🥳</p>}
-                                {infoGame?.C_STATUS === 'WIN' && infoGame?.C_WIN_PLAYER !== localStorage.getItem('username') && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-pink-700 leading-normal'}>Your lose! </span>😭😱🤕</p>}
+                                {!isGuest && infoGame?.C_NEXT_PLAYER === localStorage.getItem('username') && <p className={'text-sm text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 leading-normal'}>Your turn!</p>}
+                                {!isGuest && infoGame?.C_STATUS === 'WIN' && infoGame?.C_WIN_PLAYER === localStorage.getItem('username') && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-blue-700 leading-normal'}>Your winnnn!</span> 🥳🥳🥳</p>}
+                                {!isGuest && infoGame?.C_STATUS === 'WIN' && infoGame?.C_WIN_PLAYER !== localStorage.getItem('username') && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-pink-700 leading-normal'}>Your lose! </span>😭😱🤕</p>}
+                                {isGuest && <p><span className={'text-default-500 font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700 leading-normal'}>Your is guest</span></p>}
                             </div>
                         </CardBody>
                     </Card>
