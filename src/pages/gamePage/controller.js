@@ -94,8 +94,9 @@ export const drawTable = (cells) => {
         CTX.stroke()
     }
 
-    listCell.forEach(({x, y, side}) => {
-        renderCell(x, y, side, offsetX, offsetY)
+    listCell.forEach(({x, y, side}, index) => {
+        const isLastMove = index === listCell.length - 1
+        renderCell(x, y, side, offsetX, offsetY, isLastMove)
     })
 }
 
@@ -146,7 +147,7 @@ export const handleClickStep = (evt) => {
     }
 }
 
-export const renderCell = (x, y, side, offsetX, offsetY) => {
+export const renderCell = (x, y, side, offsetX, offsetY, isLastMove) => {
     // calc location
 
     CTX.beginPath();
@@ -163,4 +164,9 @@ export const renderCell = (x, y, side, offsetX, offsetY) => {
         CTX.fillStyle = "gray";
     }
     CTX.fill();
+    if (isLastMove) {
+        CTX.lineWidth = 2;
+        CTX.strokeStyle = "red";
+        CTX.stroke();
+    }
 }
